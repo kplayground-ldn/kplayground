@@ -71,14 +71,14 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-bg-secondary py-8 px-4">
+    <div className="min-h-screen bg-bg-secondary py-4 sm:py-8 px-3 sm:px-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6 border-2 border-primary">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-heading text-primary">K-Playground Community</h1>
-              <p className="text-primary mt-1">
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6 border-2 border-primary">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+            <div className="text-center md:text-left">
+              <h1 className="text-2xl sm:text-3xl font-heading text-primary">K-Playground Community</h1>
+              <p className="text-primary mt-1 text-sm sm:text-base">
                 {user ? (
                   <>
                     Welcome, {user.email}
@@ -89,19 +89,20 @@ export default function Home() {
                 )}
               </p>
             </div>
-            {user ? (
+            {user && (
               <button
                 onClick={handleSignOut}
-                className="flex items-center gap-2 px-4 py-2 bg-bg-secondary text-primary border-2 border-primary rounded-md hover:bg-primary hover:text-white transition-colors font-bold"
+                className="flex items-center justify-center gap-2 px-4 py-2 bg-bg-secondary text-primary border-2 border-primary rounded-md hover:bg-primary hover:text-white transition-colors font-bold whitespace-nowrap"
               >
                 <LogOut size={18} />
                 Sign Out
               </button>
-            ) : (
-              <AuthForm />
             )}
           </div>
         </div>
+
+        {/* Auth Form - Separate for guests */}
+        {!user && <AuthForm />}
 
         {/* Create Post Form - Only for logged in users */}
         {user && <CreatePostForm userEmail={user.email} userId={user.id} onPostCreated={handlePostCreated} />}

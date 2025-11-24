@@ -44,7 +44,7 @@ export default function CommentForm({ postId, userId, userEmail, onCommentAdded 
 
   return (
     <form onSubmit={handleSubmit} className="border-t-2 border-primary pt-4">
-      <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
         <input
           type="text"
           value={content}
@@ -52,12 +52,12 @@ export default function CommentForm({ postId, userId, userEmail, onCommentAdded 
           placeholder="Write a comment..."
           required
           maxLength={500}
-          className="flex-1 px-3 py-2 bg-bg-secondary border-2 border-primary rounded-md focus:outline-none focus:ring-2 focus:ring-secondary text-sm text-primary"
+          className="flex-1 px-3 py-2 sm:py-3 bg-bg-secondary border-2 border-primary rounded-md focus:outline-none focus:ring-2 focus:ring-secondary text-sm sm:text-base text-primary"
         />
         <button
           type="submit"
           disabled={loading || !content.trim()}
-          className="px-4 py-2 bg-primary text-white rounded-md hover:bg-highlight hover:text-primary border-2 border-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2 font-bold"
+          className="px-4 py-2 sm:py-3 bg-primary text-white rounded-md hover:bg-highlight hover:text-primary border-2 border-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 font-bold text-sm sm:text-base whitespace-nowrap"
         >
           <Send size={16} />
           {loading ? "..." : "Send"}

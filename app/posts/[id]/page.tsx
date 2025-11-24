@@ -123,21 +123,20 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
     <div className="min-h-screen bg-bg-secondary">
       {/* Header */}
       <div className="bg-white shadow-sm border-b-2 border-primary sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <Link href="/" className="flex items-center gap-2 text-primary hover:text-danger transition-colors font-bold">
-                <ArrowLeft size={20} />
-                <span>Back to Posts</span>
-              </Link>
-            </div>
+        <div className="max-w-4xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
+          <div className="flex justify-between items-center gap-2">
+            <Link href="/" className="flex items-center gap-2 text-primary hover:text-danger transition-colors font-bold text-sm sm:text-base">
+              <ArrowLeft size={18} className="sm:w-5 sm:h-5" />
+              <span>Back to Posts</span>
+            </Link>
             {user && (
               <button
                 onClick={handleSignOut}
-                className="flex items-center gap-2 px-4 py-2 bg-bg-secondary text-primary border-2 border-primary rounded-md hover:bg-primary hover:text-white transition-colors font-bold"
+                className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 bg-bg-secondary text-primary border-2 border-primary rounded-md hover:bg-primary hover:text-white transition-colors font-bold text-sm whitespace-nowrap"
               >
-                <LogOut size={18} />
-                Sign Out
+                <LogOut size={16} className="sm:w-[18px] sm:h-[18px]" />
+                <span className="hidden sm:inline">Sign Out</span>
+                <span className="sm:hidden">Out</span>
               </button>
             )}
           </div>
@@ -145,7 +144,7 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
       </div>
 
       {/* Content */}
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
         {loading ? (
           <div className="flex items-center justify-center py-12">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -164,23 +163,23 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
                   />
                 </div>
               )}
-              <div className="p-6">
+              <div className="p-4 sm:p-6">
                 <div className="mb-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <p className="font-heading text-primary text-lg">{post.user_email}</p>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-2">
+                    <p className="font-heading text-primary text-base sm:text-lg break-all">{post.user_email}</p>
                     {post.is_pinned && (
-                      <span className="px-2 py-1 bg-warning text-white text-xs rounded-full font-bold border-2 border-primary">PINNED</span>
+                      <span className="px-2 py-1 bg-warning text-white text-xs rounded-full font-bold border-2 border-primary self-start">PINNED</span>
                     )}
                   </div>
-                  <p className="text-sm text-primary/70">{formatDate(post.created_at)}</p>
+                  <p className="text-xs sm:text-sm text-primary/70">{formatDate(post.created_at)}</p>
                 </div>
-                <p className="text-primary whitespace-pre-wrap text-base leading-relaxed">{post.content}</p>
+                <p className="text-primary whitespace-pre-wrap text-sm sm:text-base leading-relaxed">{post.content}</p>
               </div>
             </div>
 
             {/* Comments Section */}
-            <div className="bg-white rounded-lg shadow-md p-6 border-2 border-primary">
-              <h3 className="font-heading text-primary text-xl mb-4">Comments ({comments.length})</h3>
+            <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 border-2 border-primary">
+              <h3 className="font-heading text-primary text-lg sm:text-xl mb-4">Comments ({comments.length})</h3>
 
               {comments.length === 0 ? (
                 <p className="text-primary/70 text-center py-8">No comments yet. Be the first to comment!</p>

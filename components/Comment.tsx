@@ -40,18 +40,18 @@ export default function Comment({ comment, currentUserId, isAdmin, onDelete }: C
   return (
     <div className="border-b-2 border-primary/20 py-3 last:border-b-0">
       <div className="flex justify-between items-start gap-2">
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="font-bold text-sm text-primary">{comment.user_email}</span>
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1">
+            <span className="font-bold text-xs sm:text-sm text-primary truncate">{comment.user_email}</span>
             <span className="text-xs text-primary/70">{formatDate(comment.created_at)}</span>
           </div>
-          <p className="text-primary text-sm whitespace-pre-wrap">{comment.content}</p>
+          <p className="text-primary text-xs sm:text-sm whitespace-pre-wrap break-words">{comment.content}</p>
         </div>
         {canDelete && (
           <button
             onClick={handleDelete}
             disabled={isDeleting}
-            className="p-1 text-danger hover:bg-danger/10 rounded transition-colors disabled:opacity-50 border border-danger"
+            className="p-1 text-danger hover:bg-danger/10 rounded transition-colors disabled:opacity-50 border border-danger flex-shrink-0"
             title="Delete comment"
           >
             <Trash2 size={14} />

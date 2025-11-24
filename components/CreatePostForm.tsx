@@ -81,8 +81,8 @@ export default function CreatePostForm({ userEmail, userId, onPostCreated }: Cre
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 mb-6 border-2 border-primary">
-      <h3 className="text-lg font-heading text-primary mb-4">Create a Post</h3>
+    <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6 border-2 border-primary">
+      <h3 className="text-base sm:text-lg font-heading text-primary mb-4">Create a Post</h3>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
@@ -93,14 +93,14 @@ export default function CreatePostForm({ userEmail, userId, onPostCreated }: Cre
             required
             rows={4}
             maxLength={1000}
-            className="w-full px-3 py-2 bg-bg-secondary border-2 border-primary rounded-md focus:outline-none focus:ring-2 focus:ring-secondary resize-none text-primary"
+            className="w-full px-3 py-2 bg-bg-secondary border-2 border-primary rounded-md focus:outline-none focus:ring-2 focus:ring-secondary resize-none text-primary text-base"
           />
-          <div className="text-sm text-primary mt-1 text-right font-semibold">{content.length}/1000</div>
+          <div className="text-xs sm:text-sm text-primary mt-1 text-right font-semibold">{content.length}/1000</div>
         </div>
 
         {imagePreview && (
-          <div className="relative inline-block">
-            <img src={imagePreview} alt="Preview" className="max-h-48 rounded-lg border-2 border-primary" />
+          <div className="relative inline-block w-full sm:w-auto">
+            <img src={imagePreview} alt="Preview" className="max-h-48 w-full sm:w-auto rounded-lg border-2 border-primary object-cover" />
             <button
               type="button"
               onClick={removeImage}
@@ -111,8 +111,8 @@ export default function CreatePostForm({ userEmail, userId, onPostCreated }: Cre
           </div>
         )}
 
-        <div className="flex items-center gap-4">
-          <label className="flex items-center gap-2 px-4 py-2 bg-bg-secondary text-primary border-2 border-primary rounded-md hover:bg-primary hover:text-white cursor-pointer transition-colors font-bold">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+          <label className="flex items-center justify-center gap-2 px-4 py-3 bg-bg-secondary text-primary border-2 border-primary rounded-md hover:bg-primary hover:text-white cursor-pointer transition-colors font-bold text-sm sm:text-base">
             <ImagePlus size={20} />
             <span>Add Image</span>
             <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
@@ -121,7 +121,7 @@ export default function CreatePostForm({ userEmail, userId, onPostCreated }: Cre
           <button
             type="submit"
             disabled={loading || !content.trim()}
-            className="px-6 py-2 bg-success text-white rounded-md hover:bg-primary border-2 border-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-bold"
+            className="px-6 py-3 bg-success text-white rounded-md hover:bg-primary border-2 border-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-bold text-sm sm:text-base"
           >
             {loading ? "Posting..." : "Post"}
           </button>

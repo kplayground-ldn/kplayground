@@ -40,8 +40,8 @@ export default function AuthForm() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-lg shadow-md border-2 border-primary">
-      <h2 className="text-2xl font-heading text-primary mb-6 text-center">{isSignUp ? "Sign Up" : "Sign In"}</h2>
+    <div className="max-w-md mx-auto mb-6 p-4 sm:p-6 bg-white rounded-lg shadow-md border-2 border-primary">
+      <h2 className="text-xl sm:text-2xl font-heading text-primary mb-4 sm:mb-6 text-center">{isSignUp ? "Sign Up" : "Sign In"}</h2>
 
       <form onSubmit={handleAuth} className="space-y-4">
         <div>
@@ -54,7 +54,7 @@ export default function AuthForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full px-3 py-2 bg-bg-secondary border-2 border-primary rounded-md focus:outline-none focus:ring-2 focus:ring-secondary text-primary"
+            className="w-full px-3 py-2 sm:py-3 bg-bg-secondary border-2 border-primary rounded-md focus:outline-none focus:ring-2 focus:ring-secondary text-primary text-base"
             placeholder="you@example.com"
           />
         </div>
@@ -70,7 +70,7 @@ export default function AuthForm() {
             onChange={(e) => setPassword(e.target.value)}
             required
             minLength={6}
-            className="w-full px-3 py-2 bg-bg-secondary border-2 border-primary rounded-md focus:outline-none focus:ring-2 focus:ring-secondary text-primary"
+            className="w-full px-3 py-2 sm:py-3 bg-bg-secondary border-2 border-primary rounded-md focus:outline-none focus:ring-2 focus:ring-secondary text-primary text-base"
             placeholder="••••••••"
           />
         </div>
@@ -78,7 +78,7 @@ export default function AuthForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-highlight hover:text-primary font-bold disabled:opacity-50 disabled:cursor-not-allowed transition-colors border-2 border-primary"
+          className="w-full bg-primary text-white py-3 px-4 rounded-md hover:bg-highlight hover:text-primary font-bold disabled:opacity-50 disabled:cursor-not-allowed transition-colors border-2 border-primary text-base sm:text-lg"
         >
           {loading ? "Loading..." : isSignUp ? "Sign Up" : "Sign In"}
         </button>
