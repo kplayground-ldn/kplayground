@@ -88,7 +88,8 @@ CREATE POLICY "Users can delete their own posts"
 -- Allow users to update their own posts (for pinning - will be admin only in app logic)
 CREATE POLICY "Users can update posts"
   ON posts FOR UPDATE
-  USING (true);
+  USING (true)
+  WITH CHECK (true);
 
 -- =================================================================
 -- STEP 5: CREATE POLICIES FOR COMMENTS
