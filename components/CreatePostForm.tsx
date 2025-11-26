@@ -81,9 +81,6 @@ export default function CreatePostForm({ userEmail, userId, onPostCreated }: Cre
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6 border-2 border-primary">
-      <h3 className="text-base sm:text-lg font-heading text-primary mb-4">Create a Post</h3>
-
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <textarea
@@ -129,6 +126,5 @@ export default function CreatePostForm({ userEmail, userId, onPostCreated }: Cre
 
         {error && <div className="text-danger text-sm font-semibold">{error}</div>}
       </form>
-    </div>
   );
 }

@@ -2,16 +2,18 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import AuthForm from "@/components/AuthForm";
-import CreatePostForm from "@/components/CreatePostForm";
+import AuthModal from "@/components/AuthModal";
+import CreatePostModal from "@/components/CreatePostModal";
 import PostsFeed from "@/components/PostsFeed";
-import { LogOut } from "lucide-react";
+import { LogOut, Plus } from "lucide-react";
 
 export default function Home() {
   const [user, setUser] = useState<any>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showCreatePostModal, setShowCreatePostModal] = useState(false);
 
   useEffect(() => {
     // Check active session
@@ -95,33 +97,54 @@ export default function Home() {
                 )}
               </p>
             </div>
-            {user && (
-              <button
-                onClick={handleSignOut}
-                className="flex items-center justify-center gap-2 px-4 py-2 bg-bg-secondary text-primary border-2 border-primary rounded-md hover:bg-primary hover:text-white transition-colors font-bold whitespace-nowrap"
-              >
-                <LogOut size={18} />
-                Sign Out
-              </button>
-            )}
+            <div className="flex gap-2">
+              {user ? (
+                <button
+                  onClick={handleSignOut}
+                  className="flex items-center justify-center gap-2 px-4 py-2 bg-bg-secondary text-primary border-2 border-primary rounded-md hover:bg-primary hover:text-white transition-colors font-bold whitespace-nowrap"
+                >
+                  <LogOut size={18} />
+                  Sign Out
+                </button>
+              ) : (
+                <button
+                  onClick={() => setShowAuthModal(true)}
+                  className="flex items-center justify-center gap-2 px-4 py-2 bg-primary text-white border-2 border-primary rounded-md hover:bg-highlight hover:text-primary transition-colors font-bold whitespace-nowrap"
+                >
+                  Sign In
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Auth Form - Separate for guests */}
-        {!user && <AuthForm />}
-
-        {/* Create Post Form - Only for logged in users */}
-        {user && <CreatePostForm userEmail={user.email} userId={user.id} onPostCreated={handlePostCreated} />}
-
-        {/* Sign in prompt for guests */}
-        {!user && (
-          <div className="bg-accent border-2 border-primary rounded-lg p-4 mb-6 text-center">
-            <p className="text-primary font-semibold">Sign in above to create posts and leave comments</p>
-          </div>
-        )}
-
         {/* Posts Feed */}
         <PostsFeed isAdmin={isAdmin} userId={user?.id} refreshTrigger={refreshTrigger} />
+
+        {/* Floating Action Button - Create Post (only when logged in) */}
+        {user && (
+          <button
+            onClick={() => setShowCreatePostModal(true)}
+            className="fixed bottom-6 right-6 w-14 h-14 sm:w-16 sm:h-16 bg-primary text-white rounded-full shadow-lg hover:bg-highlight hover:text-primary border-2 border-primary transition-all flex items-center justify-center z-40 hover:scale-110"
+            title="Create new post"
+          >
+            <Plus size={28} className="sm:w-8 sm:h-8" />
+          </button>
+        )}
+
+        {/* Auth Modal */}
+        <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
+
+        {/* Create Post Modal */}
+        {user && (
+          <CreatePostModal
+            isOpen={showCreatePostModal}
+            onClose={() => setShowCreatePostModal(false)}
+            userEmail={user.email}
+            userId={user.id}
+            onPostCreated={handlePostCreated}
+          />
+        )}
       </div>
     </div>
   );
