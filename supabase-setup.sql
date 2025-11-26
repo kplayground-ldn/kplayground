@@ -24,6 +24,16 @@ CREATE TABLE posts (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Create comments table to store post comments
+CREATE TABLE comments (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  post_id UUID REFERENCES posts(id) ON DELETE CASCADE NOT NULL,
+  user_id UUID REFERENCES auth.users NOT NULL,
+  user_email TEXT NOT NULL,
+  content TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- =================================================================
 -- STEP 2: ENABLE ROW LEVEL SECURITY (RLS)
 -- =================================================================
@@ -33,6 +43,9 @@ ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 
 -- Enable RLS on posts table
 ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
+
+-- Enable RLS on comments table
+ALTER TABLE comments ENABLE ROW LEVEL SECURITY;
 
 -- =================================================================
 -- STEP 3: CREATE POLICIES FOR PROFILES
@@ -78,7 +91,42 @@ CREATE POLICY "Users can update posts"
   USING (true);
 
 -- =================================================================
--- STEP 5: CREATE TRIGGER FOR NEW USER REGISTRATION
+-- STEP 5: CREATE POLICIES FOR COMMENTS
+-- =================================================================
+
+-- Allow everyone to view all comments
+CREATE POLICY "Comments are viewable by everyone"
+  ON comments FOR SELECT
+  USING (true);
+
+-- Allow authenticated users to create comments
+CREATE POLICY "Authenticated users can create comments"
+  ON comments FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+-- Allow users to delete their own comments
+CREATE POLICY "Users can delete their own comments"
+  ON comments FOR DELETE
+  USING (auth.uid() = user_id);
+
+-- Allow admins to delete any comment
+CREATE POLICY "Admins can delete any comment"
+  ON comments FOR DELETE
+  USING (
+    EXISTS (
+      SELECT 1 FROM profiles
+      WHERE profiles.id = auth.uid()
+      AND profiles.is_admin = true
+    )
+  );
+
+-- Allow users to update their own comments
+CREATE POLICY "Users can update their own comments"
+  ON comments FOR UPDATE
+  USING (auth.uid() = user_id);
+
+-- =================================================================
+-- STEP 6: CREATE TRIGGER FOR NEW USER REGISTRATION
 -- =================================================================
 
 -- Function to automatically create profile when user signs up
@@ -97,7 +145,7 @@ CREATE TRIGGER on_auth_user_created
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
 -- =================================================================
--- STEP 6: CREATE STORAGE BUCKET (Run in Storage section, not SQL)
+-- STEP 7: CREATE STORAGE BUCKET (Run in Storage section, not SQL)
 -- =================================================================
 
 -- Note: Go to Storage → Create a new bucket
@@ -118,7 +166,7 @@ CREATE POLICY "Users can delete their own images"
   USING (bucket_id = 'post-images' AND auth.uid() = owner);
 
 -- =================================================================
--- STEP 7: CREATE FIRST ADMIN USER
+-- STEP 8: CREATE FIRST ADMIN USER
 -- =================================================================
 
 -- IMPORTANT: Run this AFTER your first user has signed up
