@@ -110,8 +110,14 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
   };
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    router.push("/");
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      router.push("/");
+    } catch (error) {
+      console.error("Error signing out:", error);
+      alert("Failed to sign out. Please try again.");
+    }
   };
 
   const formatDate = (dateString: string) => {
