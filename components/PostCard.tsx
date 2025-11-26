@@ -63,12 +63,21 @@ export default function PostCard({ post, isAdmin, currentUserId, onDelete, onTog
     await onDelete(post.id);
   };
 
-  const handleTogglePin = async () => {
+  const handleTogglePin = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     await onTogglePin(post.id, !post.is_pinned);
   };
 
+  const handleDeleteClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    await handleDelete();
+  };
+
   return (
-    <div className={`bg-white rounded-lg shadow-md overflow-hidden flex flex-col hover:shadow-xl transition-shadow border-2 ${post.is_pinned ? "border-warning" : "border-primary"}`}>
+    <Link href={`/posts/${post.id}`} className="block">
+      <div className={`bg-white rounded-lg shadow-md overflow-hidden flex flex-col hover:shadow-xl transition-shadow border-2 ${post.is_pinned ? "border-warning" : "border-primary"} cursor-pointer`}>
       {/* Image Thumbnail */}
       <div className="relative w-full h-48 sm:h-56 md:h-64 bg-bg-secondary flex items-center justify-center overflow-hidden">
         {post.image_url ? (
@@ -107,7 +116,7 @@ export default function PostCard({ post, isAdmin, currentUserId, onDelete, onTog
               <Pin size={16} className={post.is_pinned ? "fill-current" : ""} />
             </button>
             <button
-              onClick={handleDelete}
+              onClick={handleDeleteClick}
               disabled={isDeleting}
               className="p-2 bg-danger text-white border-2 border-primary rounded-md hover:bg-primary transition-colors disabled:opacity-50 shadow-md"
               title="Delete post"
@@ -131,15 +140,13 @@ export default function PostCard({ post, isAdmin, currentUserId, onDelete, onTog
           {post.content}
         </p>
 
-        {/* Comment Button */}
-        <Link
-          href={`/posts/${post.id}`}
-          className="mt-3 flex items-center gap-2 text-primary hover:text-danger transition-colors text-sm font-semibold"
-        >
+        {/* Comment Count */}
+        <div className="mt-3 flex items-center gap-2 text-primary text-sm font-semibold">
           <MessageCircle size={16} />
           <span>{commentCount} {commentCount === 1 ? "comment" : "comments"}</span>
-        </Link>
+        </div>
       </div>
     </div>
+    </Link>
   );
 }
