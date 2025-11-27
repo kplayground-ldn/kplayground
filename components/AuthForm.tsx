@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabase";
 export default function AuthForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -17,6 +18,13 @@ export default function AuthForm() {
 
     try {
       if (isSignUp) {
+        // Validate password match
+        if (password !== confirmPassword) {
+          setMessage("Passwords do not match!");
+          setLoading(false);
+          return;
+        }
+
         const { error } = await supabase.auth.signUp({
           email,
           password,
@@ -76,6 +84,24 @@ export default function AuthForm() {
           />
         </div>
 
+        {isSignUp && (
+          <div>
+            <label htmlFor="confirmPassword" className="block text-sm font-bold text-primary mb-1">
+              Confirm Password
+            </label>
+            <input
+              id="confirmPassword"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              minLength={6}
+              className="w-full px-3 py-2 sm:py-3 bg-bg-secondary border-2 border-primary rounded-md focus:outline-none focus:ring-2 focus:ring-secondary text-primary text-base"
+              placeholder="••••••••"
+            />
+          </div>
+        )}
+
         <button
           type="submit"
           disabled={loading}
@@ -97,7 +123,14 @@ export default function AuthForm() {
         </div>
       )}
 
-      <button onClick={() => setIsSignUp(!isSignUp)} className="w-full mt-4 text-sm text-danger hover:underline font-semibold">
+      <button
+        onClick={() => {
+          setIsSignUp(!isSignUp);
+          setConfirmPassword("");
+          setMessage("");
+        }}
+        className="w-full mt-4 text-sm text-danger hover:underline font-semibold"
+      >
         {isSignUp ? "Already have an account? Sign In" : "Don't have an account? Sign Up"}
       </button>
     </div>
