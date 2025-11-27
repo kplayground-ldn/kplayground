@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase, Post, Comment as CommentType } from "@/lib/supabase";
-import { X } from "lucide-react";
+import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import Comment from "./Comment";
 import CommentForm from "./CommentForm";
 
@@ -19,6 +19,7 @@ export default function PostDetailModal({ postId, currentUserId, currentUserEmai
   const [post, setPost] = useState<Post | null>(null);
   const [comments, setComments] = useState<CommentType[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
     if (!postId) return;
@@ -110,7 +111,53 @@ export default function PostDetailModal({ postId, currentUserId, currentUserEmai
           <>
             {/* Post Content */}
             <div className="p-3 sm:p-4 border-b border-gray-200">
-              {post.image_url && <img src={post.image_url} alt="Post image" className="w-full max-h-48 sm:max-h-64 object-cover rounded-lg mb-3 sm:mb-4" />}
+              {/* Image Gallery */}
+              {((post.image_urls && post.image_urls.length > 0) || post.image_url) && (
+                <div className="relative mb-3 sm:mb-4">
+                  {(() => {
+                    const images = post.image_urls && post.image_urls.length > 0 ? post.image_urls : (post.image_url ? [post.image_url] : []);
+                    const currentImage = images[currentImageIndex];
+
+                    return (
+                      <>
+                        <img src={currentImage} alt={`Post image ${currentImageIndex + 1}`} className="w-full max-h-48 sm:max-h-64 object-cover rounded-lg" />
+
+                        {/* Navigation Arrows - only show if more than 1 image */}
+                        {images.length > 1 && (
+                          <>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+                              }}
+                              className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-1 sm:p-2 rounded-full transition-colors"
+                              title="Previous image"
+                            >
+                              <ChevronLeft size={20} />
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+                              }}
+                              className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-1 sm:p-2 rounded-full transition-colors"
+                              title="Next image"
+                            >
+                              <ChevronRight size={20} />
+                            </button>
+
+                            {/* Image Counter */}
+                            <div className="absolute bottom-2 right-2 bg-black/70 text-white px-2 py-1 rounded-md text-xs font-bold">
+                              {currentImageIndex + 1} / {images.length}
+                            </div>
+                          </>
+                        )}
+                      </>
+                    );
+                  })()}
+                </div>
+              )}
+
               <div className="mb-2">
                 <p className="font-semibold text-gray-900 text-sm sm:text-base break-all">{post.username || post.user_email}</p>
                 <p className="text-xs text-gray-500">{formatDate(post.created_at)}</p>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase, Post, Comment as CommentType } from "@/lib/supabase";
-import { ArrowLeft, LogOut } from "lucide-react";
+import { ArrowLeft, LogOut, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Comment from "@/components/Comment";
 import CommentForm from "@/components/CommentForm";
@@ -16,6 +16,7 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
   const [user, setUser] = useState<any>(null);
   const [username, setUsername] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
     // Check auth status
@@ -162,13 +163,62 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
           <div className="space-y-6">
             {/* Post Content */}
             <div className="bg-white rounded-lg shadow-md overflow-hidden border-2 border-primary">
-              {post.image_url && (
-                <div className="w-full bg-bg-secondary flex items-center justify-center overflow-hidden">
-                  <img
-                    src={post.image_url}
-                    alt="Post image"
-                    className="w-full h-auto max-h-[300px] sm:max-h-[400px] md:max-h-[500px] lg:max-h-[600px] object-contain"
-                  />
+              {/* Image Gallery */}
+              {((post.image_urls && post.image_urls.length > 0) || post.image_url) && (
+                <div className="relative w-full bg-bg-secondary flex items-center justify-center overflow-hidden">
+                  {(() => {
+                    const images = post.image_urls && post.image_urls.length > 0 ? post.image_urls : (post.image_url ? [post.image_url] : []);
+                    const currentImage = images[currentImageIndex];
+
+                    return (
+                      <>
+                        <img
+                          src={currentImage}
+                          alt={`Post image ${currentImageIndex + 1}`}
+                          className="w-full h-auto max-h-[300px] sm:max-h-[400px] md:max-h-[500px] lg:max-h-[600px] object-contain"
+                        />
+
+                        {/* Navigation Arrows - only show if more than 1 image */}
+                        {images.length > 1 && (
+                          <>
+                            <button
+                              onClick={() => setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))}
+                              className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 sm:p-3 rounded-full transition-colors"
+                              title="Previous image"
+                            >
+                              <ChevronLeft size={24} className="sm:w-8 sm:h-8" />
+                            </button>
+                            <button
+                              onClick={() => setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))}
+                              className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 sm:p-3 rounded-full transition-colors"
+                              title="Next image"
+                            >
+                              <ChevronRight size={24} className="sm:w-8 sm:h-8" />
+                            </button>
+
+                            {/* Image Counter */}
+                            <div className="absolute bottom-3 sm:bottom-4 right-3 sm:right-4 bg-black/70 text-white px-3 py-1.5 rounded-md text-sm font-bold">
+                              {currentImageIndex + 1} / {images.length}
+                            </div>
+
+                            {/* Thumbnail Dots */}
+                            <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                              {images.map((_, index) => (
+                                <button
+                                  key={index}
+                                  onClick={() => setCurrentImageIndex(index)}
+                                  className={`w-2 h-2 rounded-full transition-all ${
+                                    index === currentImageIndex ? 'bg-white w-6' : 'bg-white/50 hover:bg-white/75'
+                                  }`}
+                                  title={`Go to image ${index + 1}`}
+                                />
+                              ))}
+                            </div>
+                          </>
+                        )}
+                      </>
+                    );
+                  })()}
                 </div>
               )}
               <div className="p-4 sm:p-6">

@@ -80,12 +80,20 @@ export default function PostCard({ post, isAdmin, currentUserId, onDelete, onTog
       <div className={`bg-white rounded-lg shadow-md overflow-hidden flex flex-col hover:shadow-xl transition-shadow border-2 ${post.is_pinned ? "border-warning" : "border-primary"} cursor-pointer`}>
       {/* Image Thumbnail */}
       <div className="relative w-full h-48 sm:h-56 md:h-64 bg-bg-secondary flex items-center justify-center overflow-hidden">
-        {post.image_url ? (
-          <img
-            src={post.image_url}
-            alt="Post image"
-            className="w-full h-full object-cover"
-          />
+        {(post.image_urls && post.image_urls.length > 0) || post.image_url ? (
+          <>
+            <img
+              src={(post.image_urls && post.image_urls.length > 0) ? post.image_urls[0] : post.image_url!}
+              alt="Post image"
+              className="w-full h-full object-cover"
+            />
+            {post.image_urls && post.image_urls.length > 1 && (
+              <div className="absolute bottom-2 right-2 bg-black/70 text-white px-2 py-1 rounded-md flex items-center gap-1 text-xs font-bold">
+                <ImageIcon size={14} />
+                <span>+{post.image_urls.length - 1} more</span>
+              </div>
+            )}
+          </>
         ) : (
           <div className="flex flex-col items-center justify-center text-primary">
             <ImageIcon size={48} />

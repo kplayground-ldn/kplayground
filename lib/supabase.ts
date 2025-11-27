@@ -11,7 +11,8 @@ export type Post = {
   user_email: string
   username: string
   content: string
-  image_url: string | null
+  image_url: string | null  // Keep for backward compatibility
+  image_urls: string[]  // New field for multiple images
   is_pinned: boolean
   created_at: string
 }

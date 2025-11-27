@@ -13,27 +13,53 @@ type CreatePostFormProps = {
 
 export default function CreatePostForm({ userEmail, username, userId, onPostCreated }: CreatePostFormProps) {
   const [content, setContent] = useState("");
-  const [image, setImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [images, setImages] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
+    const files = e.target.files;
+    if (!files) return;
+
+    const fileArray = Array.from(files);
+    const maxImages = 5;
+
+    // Check if adding these images would exceed the limit
+    if (images.length + fileArray.length > maxImages) {
+      setError(`You can only upload up to ${maxImages} images`);
+      return;
+    }
+
+    // Validate each file
+    for (const file of fileArray) {
       if (file.size > 5 * 1024 * 1024) {
-        setError("Image must be less than 5MB");
+        setError("Each image must be less than 5MB");
         return;
       }
-      setImage(file);
-      setImagePreview(URL.createObjectURL(file));
-      setError("");
     }
+
+    // Add new images to existing ones
+    const newImages = [...images, ...fileArray];
+    const newPreviews = [...imagePreviews, ...fileArray.map(file => URL.createObjectURL(file))];
+
+    setImages(newImages);
+    setImagePreviews(newPreviews);
+    setError("");
+
+    // Reset the input so the same file can be selected again
+    e.target.value = '';
   };
 
-  const removeImage = () => {
-    setImage(null);
-    setImagePreview(null);
+  const removeImage = (index: number) => {
+    const newImages = images.filter((_, i) => i !== index);
+    const newPreviews = imagePreviews.filter((_, i) => i !== index);
+
+    // Revoke the URL to free memory
+    URL.revokeObjectURL(imagePreviews[index]);
+
+    setImages(newImages);
+    setImagePreviews(newPreviews);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -44,36 +70,43 @@ export default function CreatePostForm({ userEmail, username, userId, onPostCrea
     setError("");
 
     try {
-      let imageUrl = null;
+      const imageUrls: string[] = [];
 
-      // Upload image if present
-      if (image) {
-        const fileExt = image.name.split(".").pop();
-        const fileName = `${userId}-${Date.now()}.${fileExt}`;
-        const { data: uploadData, error: uploadError } = await supabase.storage.from("post-images").upload(fileName, image);
+      // Upload all images if present
+      if (images.length > 0) {
+        for (let i = 0; i < images.length; i++) {
+          const image = images[i];
+          const fileExt = image.name.split(".").pop();
+          const fileName = `${userId}-${Date.now()}-${i}.${fileExt}`;
 
-        if (uploadError) throw uploadError;
+          const { error: uploadError } = await supabase.storage.from("post-images").upload(fileName, image);
 
-        const { data: urlData } = supabase.storage.from("post-images").getPublicUrl(fileName);
+          if (uploadError) throw uploadError;
 
-        imageUrl = urlData.publicUrl;
+          const { data: urlData } = supabase.storage.from("post-images").getPublicUrl(fileName);
+          imageUrls.push(urlData.publicUrl);
+        }
       }
 
-      // Create post
+      // Create post with multiple images
       const { error: insertError } = await supabase.from("posts").insert({
         user_id: userId,
         user_email: userEmail,
         username: username,
         content: content.trim(),
-        image_url: imageUrl,
+        image_url: imageUrls.length > 0 ? imageUrls[0] : null,  // Keep first image for backward compatibility
+        image_urls: imageUrls,
       });
 
       if (insertError) throw insertError;
 
+      // Clean up preview URLs
+      imagePreviews.forEach(preview => URL.revokeObjectURL(preview));
+
       // Reset form
       setContent("");
-      setImage(null);
-      setImagePreview(null);
+      setImages([]);
+      setImagePreviews([]);
       onPostCreated();
     } catch (error: any) {
       setError(error.message);
@@ -97,24 +130,29 @@ export default function CreatePostForm({ userEmail, username, userId, onPostCrea
           <div className="text-xs sm:text-sm text-primary mt-1 text-right font-semibold">{content.length}/1000</div>
         </div>
 
-        {imagePreview && (
-          <div className="relative inline-block w-full sm:w-auto">
-            <img src={imagePreview} alt="Preview" className="max-h-48 w-full sm:w-auto rounded-lg border-2 border-primary object-cover" />
-            <button
-              type="button"
-              onClick={removeImage}
-              className="absolute top-2 right-2 bg-danger text-white p-1 rounded-full hover:bg-primary"
-            >
-              <X size={16} />
-            </button>
+        {imagePreviews.length > 0 && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {imagePreviews.map((preview, index) => (
+              <div key={index} className="relative">
+                <img src={preview} alt={`Preview ${index + 1}`} className="w-full h-32 sm:h-40 rounded-lg border-2 border-primary object-cover" />
+                <button
+                  type="button"
+                  onClick={() => removeImage(index)}
+                  className="absolute top-2 right-2 bg-danger text-white p-1 rounded-full hover:bg-primary shadow-lg"
+                  title="Remove image"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            ))}
           </div>
         )}
 
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
           <label className="flex items-center justify-center gap-2 px-4 py-3 bg-bg-secondary text-primary border-2 border-primary rounded-md hover:bg-primary hover:text-white cursor-pointer transition-colors font-bold text-sm sm:text-base">
             <ImagePlus size={20} />
-            <span>Add Image</span>
-            <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+            <span>Add Images ({images.length}/5)</span>
+            <input type="file" accept="image/*" multiple onChange={handleImageChange} className="hidden" />
           </label>
 
           <button
