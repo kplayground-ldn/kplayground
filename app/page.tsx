@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase";
 import AuthModal from "@/components/AuthModal";
 import CreatePostModal from "@/components/CreatePostModal";
 import PostsFeed from "@/components/PostsFeed";
+import NotificationBell from "@/components/NotificationBell";
 import { LogOut, Plus } from "lucide-react";
 
 export default function Home() {
@@ -99,15 +100,18 @@ export default function Home() {
                 )}
               </p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
               {user ? (
-                <button
-                  onClick={handleSignOut}
-                  className="flex items-center justify-center gap-2 px-4 py-2 bg-bg-secondary text-primary border-2 border-primary rounded-md hover:bg-primary hover:text-white transition-colors font-bold whitespace-nowrap"
-                >
-                  <LogOut size={18} />
-                  Sign Out
-                </button>
+                <>
+                  <NotificationBell userId={user.id} />
+                  <button
+                    onClick={handleSignOut}
+                    className="flex items-center justify-center gap-2 px-4 py-2 bg-bg-secondary text-primary border-2 border-primary rounded-md hover:bg-primary hover:text-white transition-colors font-bold whitespace-nowrap"
+                  >
+                    <LogOut size={18} />
+                    Sign Out
+                  </button>
+                </>
               ) : (
                 <button
                   onClick={() => setShowAuthModal(true)}

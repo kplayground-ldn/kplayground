@@ -6,6 +6,7 @@ import { ArrowLeft, LogOut, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Comment from "@/components/Comment";
 import CommentForm from "@/components/CommentForm";
+import NotificationBell from "@/components/NotificationBell";
 import Link from "next/link";
 
 export default function PostDetailPage({ params }: { params: { id: string } }) {
@@ -141,14 +142,17 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
               <span>Back to Posts</span>
             </Link>
             {user && (
-              <button
-                onClick={handleSignOut}
-                className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 bg-bg-secondary text-primary border-2 border-primary rounded-md hover:bg-primary hover:text-white transition-colors font-bold text-sm whitespace-nowrap"
-              >
-                <LogOut size={16} className="sm:w-[18px] sm:h-[18px]" />
-                <span className="hidden sm:inline">Sign Out</span>
-                <span className="sm:hidden">Out</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <NotificationBell userId={user.id} />
+                <button
+                  onClick={handleSignOut}
+                  className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 bg-bg-secondary text-primary border-2 border-primary rounded-md hover:bg-primary hover:text-white transition-colors font-bold text-sm whitespace-nowrap"
+                >
+                  <LogOut size={16} className="sm:w-[18px] sm:h-[18px]" />
+                  <span className="hidden sm:inline">Sign Out</span>
+                  <span className="sm:hidden">Out</span>
+                </button>
+              </div>
             )}
           </div>
         </div>

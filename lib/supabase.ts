@@ -34,3 +34,15 @@ export type Profile = {
   is_admin: boolean
   created_at: string
 }
+
+export type Notification = {
+  id: string
+  user_id: string
+  type: string  // 'comment', 'like', etc.
+  post_id: string
+  actor_id: string
+  actor_username: string
+  content: string
+  is_read: boolean
+  created_at: string
+}
