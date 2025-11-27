@@ -6,11 +6,12 @@ import { ImagePlus, X } from "lucide-react";
 
 type CreatePostFormProps = {
   userEmail: string;
+  username: string;
   userId: string;
   onPostCreated: () => void;
 };
 
-export default function CreatePostForm({ userEmail, userId, onPostCreated }: CreatePostFormProps) {
+export default function CreatePostForm({ userEmail, username, userId, onPostCreated }: CreatePostFormProps) {
   const [content, setContent] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -62,6 +63,7 @@ export default function CreatePostForm({ userEmail, userId, onPostCreated }: Cre
       const { error: insertError } = await supabase.from("posts").insert({
         user_id: userId,
         user_email: userEmail,
+        username: username,
         content: content.trim(),
         image_url: imageUrl,
       });

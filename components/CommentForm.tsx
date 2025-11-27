@@ -8,10 +8,11 @@ type CommentFormProps = {
   postId: string;
   userId: string;
   userEmail: string;
+  username: string;
   onCommentAdded: () => void;
 };
 
-export default function CommentForm({ postId, userId, userEmail, onCommentAdded }: CommentFormProps) {
+export default function CommentForm({ postId, userId, userEmail, username, onCommentAdded }: CommentFormProps) {
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -28,6 +29,7 @@ export default function CommentForm({ postId, userId, userEmail, onCommentAdded 
         post_id: postId,
         user_id: userId,
         user_email: userEmail,
+        username: username,
         content: content.trim(),
       });
 

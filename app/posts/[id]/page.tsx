@@ -14,6 +14,7 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
   const [comments, setComments] = useState<CommentType[]>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
+  const [username, setUsername] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
@@ -39,9 +40,10 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
 
   const checkAdminStatus = async (userId: string) => {
     try {
-      const { data, error } = await supabase.from("profiles").select("is_admin").eq("id", userId).single();
+      const { data, error } = await supabase.from("profiles").select("is_admin, username").eq("id", userId).single();
       if (error) throw error;
       setIsAdmin(data?.is_admin ?? false);
+      setUsername(data?.username ?? "");
     } catch (error) {
       console.error("Error checking admin status:", error);
     }
@@ -172,7 +174,7 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
               <div className="p-4 sm:p-6">
                 <div className="mb-4">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-2">
-                    <p className="font-heading text-primary text-base sm:text-lg break-all">{post.user_email}</p>
+                    <p className="font-heading text-primary text-base sm:text-lg break-all">{post.username || post.user_email}</p>
                     {post.is_pinned && (
                       <span className="px-2 py-1 bg-warning text-white text-xs rounded-full font-bold border-2 border-primary self-start">PINNED</span>
                     )}
@@ -199,7 +201,7 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
 
               {/* Comment Form */}
               {user ? (
-                <CommentForm postId={params.id} userId={user.id} userEmail={user.email} onCommentAdded={handleCommentAdded} />
+                <CommentForm postId={params.id} userId={user.id} userEmail={user.email} username={username} onCommentAdded={handleCommentAdded} />
               ) : (
                 <div className="border-t-2 border-primary pt-4">
                   <div className="bg-accent border-2 border-primary rounded-lg p-4 text-center">

@@ -42,7 +42,7 @@ export default function Comment({ comment, currentUserId, isAdmin, onDelete }: C
       <div className="flex justify-between items-start gap-2">
         <div className="flex-1 min-w-0">
           <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1">
-            <span className="font-bold text-xs sm:text-sm text-primary truncate">{comment.user_email}</span>
+            <span className="font-bold text-xs sm:text-sm text-primary truncate">{comment.username || comment.user_email}</span>
             <span className="text-xs text-primary/70">{formatDate(comment.created_at)}</span>
           </div>
           <p className="text-primary text-xs sm:text-sm whitespace-pre-wrap break-words">{comment.content}</p>

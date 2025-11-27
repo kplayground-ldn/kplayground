@@ -131,7 +131,7 @@ export default function PostCard({ post, isAdmin, currentUserId, onDelete, onTog
       <div className="p-4 flex flex-col flex-grow">
         {/* User Info */}
         <div className="mb-2">
-          <p className="font-bold text-primary text-sm truncate">{post.user_email}</p>
+          <p className="font-bold text-primary text-sm truncate">{post.username || post.user_email}</p>
           <p className="text-xs text-primary/70">{formatDate(post.created_at)}</p>
         </div>
 

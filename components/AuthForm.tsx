@@ -7,6 +7,7 @@ export default function AuthForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [username, setUsername] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -25,11 +26,40 @@ export default function AuthForm() {
           return;
         }
 
+        // Validate username
+        if (!username.trim()) {
+          setMessage("Username is required!");
+          setLoading(false);
+          return;
+        }
+
+        if (username.length < 3) {
+          setMessage("Username must be at least 3 characters!");
+          setLoading(false);
+          return;
+        }
+
+        if (username.length > 20) {
+          setMessage("Username must be less than 20 characters!");
+          setLoading(false);
+          return;
+        }
+
+        // Check for valid username characters (alphanumeric, underscore, hyphen)
+        if (!/^[a-zA-Z0-9_-]+$/.test(username)) {
+          setMessage("Username can only contain letters, numbers, underscore, and hyphen!");
+          setLoading(false);
+          return;
+        }
+
         const { error } = await supabase.auth.signUp({
           email,
           password,
           options: {
             emailRedirectTo: `${window.location.origin}/auth/callback`,
+            data: {
+              username: username.trim(),
+            },
           },
         });
         if (error) throw error;
@@ -67,6 +97,27 @@ export default function AuthForm() {
             placeholder="you@example.com"
           />
         </div>
+
+        {isSignUp && (
+          <div>
+            <label htmlFor="username" className="block text-sm font-bold text-primary mb-1">
+              Username
+            </label>
+            <input
+              id="username"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              minLength={3}
+              maxLength={20}
+              pattern="[a-zA-Z0-9_-]+"
+              className="w-full px-3 py-2 sm:py-3 bg-bg-secondary border-2 border-primary rounded-md focus:outline-none focus:ring-2 focus:ring-secondary text-primary text-base"
+              placeholder="username123"
+            />
+            <p className="text-xs text-primary/70 mt-1">3-20 characters, letters, numbers, underscore, or hyphen</p>
+          </div>
+        )}
 
         <div>
           <label htmlFor="password" className="block text-sm font-bold text-primary mb-1">
@@ -127,6 +178,7 @@ export default function AuthForm() {
         onClick={() => {
           setIsSignUp(!isSignUp);
           setConfirmPassword("");
+          setUsername("");
           setMessage("");
         }}
         className="w-full mt-4 text-sm text-danger hover:underline font-semibold"

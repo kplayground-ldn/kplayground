@@ -7,11 +7,12 @@ type CreatePostModalProps = {
   isOpen: boolean;
   onClose: () => void;
   userEmail: string;
+  username: string;
   userId: string;
   onPostCreated: () => void;
 };
 
-export default function CreatePostModal({ isOpen, onClose, userEmail, userId, onPostCreated }: CreatePostModalProps) {
+export default function CreatePostModal({ isOpen, onClose, userEmail, username, userId, onPostCreated }: CreatePostModalProps) {
   if (!isOpen) return null;
 
   const handlePostCreated = () => {
@@ -32,7 +33,7 @@ export default function CreatePostModal({ isOpen, onClose, userEmail, userId, on
 
         {/* Create Post Form */}
         <div className="p-4">
-          <CreatePostForm userEmail={userEmail} userId={userId} onPostCreated={handlePostCreated} />
+          <CreatePostForm userEmail={userEmail} username={username} userId={userId} onPostCreated={handlePostCreated} />
         </div>
       </div>
     </div>

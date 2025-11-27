@@ -9,6 +9,7 @@ import { LogOut, Plus } from "lucide-react";
 
 export default function Home() {
   const [user, setUser] = useState<any>(null);
+  const [username, setUsername] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -41,10 +42,11 @@ export default function Home() {
 
   const checkAdminStatus = async (userId: string) => {
     try {
-      const { data, error } = await supabase.from("profiles").select("is_admin").eq("id", userId).single();
+      const { data, error } = await supabase.from("profiles").select("is_admin, username").eq("id", userId).single();
 
       if (error) throw error;
       setIsAdmin(data?.is_admin ?? false);
+      setUsername(data?.username ?? "");
     } catch (error) {
       console.error("Error checking admin status:", error);
     } finally {
@@ -89,7 +91,7 @@ export default function Home() {
               <p className="text-primary mt-1 text-sm sm:text-base">
                 {user ? (
                   <>
-                    Welcome, {user.email}
+                    Welcome, {username || user.email}
                     {isAdmin && <span className="ml-2 px-2 py-1 bg-warning text-white text-xs rounded-full font-bold">ADMIN</span>}
                   </>
                 ) : (
@@ -141,6 +143,7 @@ export default function Home() {
             isOpen={showCreatePostModal}
             onClose={() => setShowCreatePostModal(false)}
             userEmail={user.email}
+            username={username}
             userId={user.id}
             onPostCreated={handlePostCreated}
           />

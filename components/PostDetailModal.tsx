@@ -10,11 +10,12 @@ type PostDetailModalProps = {
   postId: string | null;
   currentUserId: string | undefined;
   currentUserEmail: string | undefined;
+  currentUsername: string | undefined;
   isAdmin: boolean;
   onClose: () => void;
 };
 
-export default function PostDetailModal({ postId, currentUserId, currentUserEmail, isAdmin, onClose }: PostDetailModalProps) {
+export default function PostDetailModal({ postId, currentUserId, currentUserEmail, currentUsername, isAdmin, onClose }: PostDetailModalProps) {
   const [post, setPost] = useState<Post | null>(null);
   const [comments, setComments] = useState<CommentType[]>([]);
   const [loading, setLoading] = useState(true);
@@ -111,7 +112,7 @@ export default function PostDetailModal({ postId, currentUserId, currentUserEmai
             <div className="p-3 sm:p-4 border-b border-gray-200">
               {post.image_url && <img src={post.image_url} alt="Post image" className="w-full max-h-48 sm:max-h-64 object-cover rounded-lg mb-3 sm:mb-4" />}
               <div className="mb-2">
-                <p className="font-semibold text-gray-900 text-sm sm:text-base break-all">{post.user_email}</p>
+                <p className="font-semibold text-gray-900 text-sm sm:text-base break-all">{post.username || post.user_email}</p>
                 <p className="text-xs text-gray-500">{formatDate(post.created_at)}</p>
               </div>
               <p className="text-gray-700 whitespace-pre-wrap text-sm sm:text-base">{post.content}</p>
@@ -134,9 +135,9 @@ export default function PostDetailModal({ postId, currentUserId, currentUserEmai
             </div>
 
             {/* Comment Form */}
-            {currentUserId && currentUserEmail ? (
+            {currentUserId && currentUserEmail && currentUsername ? (
               <div className="p-3 sm:p-4 border-t border-gray-200">
-                <CommentForm postId={postId} userId={currentUserId} userEmail={currentUserEmail} onCommentAdded={handleCommentAdded} />
+                <CommentForm postId={postId} userId={currentUserId} userEmail={currentUserEmail} username={currentUsername} onCommentAdded={handleCommentAdded} />
               </div>
             ) : (
               <div className="p-3 sm:p-4 border-t border-gray-200 text-center text-gray-600 text-xs sm:text-sm">Sign in to leave a comment</div>

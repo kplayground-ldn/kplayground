@@ -9,6 +9,7 @@ export type Post = {
   id: string
   user_id: string
   user_email: string
+  username: string
   content: string
   image_url: string | null
   is_pinned: boolean
@@ -20,6 +21,7 @@ export type Comment = {
   post_id: string
   user_id: string
   user_email: string
+  username: string
   content: string
   created_at: string
 }
@@ -27,6 +29,7 @@ export type Comment = {
 export type Profile = {
   id: string
   email: string
+  username: string
   is_admin: boolean
   created_at: string
 }
