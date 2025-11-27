@@ -108,8 +108,10 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
     }
   };
 
-  const handleCommentAdded = () => {
-    // Refresh will happen via subscription
+  const handleCommentAdded = (newComment: CommentType) => {
+    // Immediately add the comment to the UI for instant feedback
+    setComments((prev) => [...prev, newComment]);
+    // Subscription will keep things in sync if needed
   };
 
   const handleSignOut = async () => {

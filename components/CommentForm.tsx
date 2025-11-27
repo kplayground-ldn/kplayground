@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { supabase, Comment } from "@/lib/supabase";
 import { Send } from "lucide-react";
 
 type CommentFormProps = {
@@ -9,7 +9,7 @@ type CommentFormProps = {
   userId: string;
   userEmail: string;
   username: string;
-  onCommentAdded: () => void;
+  onCommentAdded: (comment: Comment) => void;
 };
 
 export default function CommentForm({ postId, userId, userEmail, username, onCommentAdded }: CommentFormProps) {
@@ -25,18 +25,22 @@ export default function CommentForm({ postId, userId, userEmail, username, onCom
     setError("");
 
     try {
-      const { error: insertError } = await supabase.from("comments").insert({
+      const { data, error: insertError } = await supabase.from("comments").insert({
         post_id: postId,
         user_id: userId,
         user_email: userEmail,
         username: username,
         content: content.trim(),
-      });
+      }).select().single();
 
       if (insertError) throw insertError;
 
       setContent("");
-      onCommentAdded();
+
+      // Pass the newly created comment to the parent
+      if (data) {
+        onCommentAdded(data);
+      }
     } catch (error: any) {
       setError(error.message);
     } finally {
