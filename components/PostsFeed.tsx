@@ -8,10 +8,12 @@ type PostsFeedProps = {
   isAdmin: boolean;
   userId: string | undefined;
   refreshTrigger: number;
+  searchQuery?: string;
 };
 
-export default function PostsFeed({ isAdmin, userId, refreshTrigger }: PostsFeedProps) {
+export default function PostsFeed({ isAdmin, userId, refreshTrigger, searchQuery = "" }: PostsFeedProps) {
   const [posts, setPosts] = useState<Post[]>([]);
+  const [filteredPosts, setFilteredPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchPosts = async () => {
@@ -46,6 +48,28 @@ export default function PostsFeed({ isAdmin, userId, refreshTrigger }: PostsFeed
       subscription.unsubscribe();
     };
   }, [refreshTrigger]);
+
+  // Filter posts based on search query
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setFilteredPosts(posts);
+      return;
+    }
+
+    const query = searchQuery.toLowerCase().trim();
+    const filtered = posts.filter((post) => {
+      // Search in post content
+      const contentMatch = post.content.toLowerCase().includes(query);
+      // Search in username
+      const usernameMatch = post.username?.toLowerCase().includes(query);
+      // Search in email (fallback)
+      const emailMatch = post.user_email?.toLowerCase().includes(query);
+
+      return contentMatch || usernameMatch || emailMatch;
+    });
+
+    setFilteredPosts(filtered);
+  }, [posts, searchQuery]);
 
   const handleDelete = async (postId: string) => {
     try {
@@ -82,15 +106,24 @@ export default function PostsFeed({ isAdmin, userId, refreshTrigger }: PostsFeed
 
   if (posts.length === 0) {
     return (
-      <div className="text-center py-12 bg-white rounded-lg shadow-md">
-        <p className="text-gray-600 text-lg">No posts yet. Be the first to share something!</p>
+      <div className="text-center py-12 bg-white rounded-lg shadow-md border-2 border-primary">
+        <p className="text-primary text-lg font-semibold">No posts yet. Be the first to share something!</p>
+      </div>
+    );
+  }
+
+  if (filteredPosts.length === 0 && searchQuery.trim()) {
+    return (
+      <div className="text-center py-12 bg-white rounded-lg shadow-md border-2 border-primary">
+        <p className="text-primary text-lg font-semibold">No posts found matching "{searchQuery}"</p>
+        <p className="text-primary/70 text-sm mt-2">Try a different search term</p>
       </div>
     );
   }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {posts.map((post) => (
+      {filteredPosts.map((post) => (
         <PostCard
           key={post.id}
           post={post}

@@ -6,6 +6,7 @@ import AuthModal from "@/components/AuthModal";
 import CreatePostModal from "@/components/CreatePostModal";
 import PostsFeed from "@/components/PostsFeed";
 import NotificationBell from "@/components/NotificationBell";
+import SearchBar from "@/components/SearchBar";
 import { LogOut, Plus } from "lucide-react";
 
 export default function Home() {
@@ -16,6 +17,7 @@ export default function Home() {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showCreatePostModal, setShowCreatePostModal] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     // Check active session
@@ -124,8 +126,13 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Search Bar */}
+        <div className="mb-6">
+          <SearchBar value={searchQuery} onChange={setSearchQuery} placeholder="Search posts by content or username..." />
+        </div>
+
         {/* Posts Feed */}
-        <PostsFeed isAdmin={isAdmin} userId={user?.id} refreshTrigger={refreshTrigger} />
+        <PostsFeed isAdmin={isAdmin} userId={user?.id} refreshTrigger={refreshTrigger} searchQuery={searchQuery} />
 
         {/* Floating Action Button - Create Post (only when logged in) */}
         {user && (
