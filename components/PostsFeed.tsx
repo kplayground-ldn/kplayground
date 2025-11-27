@@ -115,7 +115,7 @@ export default function PostsFeed({ isAdmin, userId, refreshTrigger, searchQuery
   if (filteredPosts.length === 0 && searchQuery.trim()) {
     return (
       <div className="text-center py-12 bg-white rounded-lg shadow-md border-2 border-primary">
-        <p className="text-primary text-lg font-semibold">No posts found matching "{searchQuery}"</p>
+        <p className="text-primary text-lg font-semibold">No posts found matching {searchQuery}</p>
         <p className="text-primary/70 text-sm mt-2">Try a different search term</p>
       </div>
     );

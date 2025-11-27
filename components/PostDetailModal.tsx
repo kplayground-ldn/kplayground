@@ -15,7 +15,14 @@ type PostDetailModalProps = {
   onClose: () => void;
 };
 
-export default function PostDetailModal({ postId, currentUserId, currentUserEmail, currentUsername, isAdmin, onClose }: PostDetailModalProps) {
+export default function PostDetailModal({
+  postId,
+  currentUserId,
+  currentUserEmail,
+  currentUsername,
+  isAdmin,
+  onClose,
+}: PostDetailModalProps) {
   const [post, setPost] = useState<Post | null>(null);
   const [comments, setComments] = useState<CommentType[]>([]);
   const [loading, setLoading] = useState(true);
@@ -96,7 +103,10 @@ export default function PostDetailModal({ postId, currentUserId, currentUserEmai
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4" onClick={onClose}>
-      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="bg-white rounded-lg max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="flex justify-between items-center p-3 sm:p-4 border-b border-gray-200">
           <h2 className="text-lg sm:text-xl font-bold text-gray-900">Post Details</h2>
@@ -117,12 +127,16 @@ export default function PostDetailModal({ postId, currentUserId, currentUserEmai
               {((post.image_urls && post.image_urls.length > 0) || post.image_url) && (
                 <div className="relative mb-3 sm:mb-4">
                   {(() => {
-                    const images = post.image_urls && post.image_urls.length > 0 ? post.image_urls : (post.image_url ? [post.image_url] : []);
+                    const images = post.image_urls && post.image_urls.length > 0 ? post.image_urls : post.image_url ? [post.image_url] : [];
                     const currentImage = images[currentImageIndex];
 
                     return (
                       <>
-                        <img src={currentImage} alt={`Post image ${currentImageIndex + 1}`} className="w-full max-h-48 sm:max-h-64 object-cover rounded-lg" />
+                        <img
+                          src={currentImage}
+                          alt={`Post image ${currentImageIndex + 1}`}
+                          className="w-full max-h-48 sm:max-h-64 object-cover rounded-lg"
+                        />
 
                         {/* Navigation Arrows - only show if more than 1 image */}
                         {images.length > 1 && (
@@ -169,15 +183,19 @@ export default function PostDetailModal({ postId, currentUserId, currentUserEmai
 
             {/* Comments Section */}
             <div className="flex-1 overflow-y-auto p-3 sm:p-4">
-              <h3 className="font-semibold text-gray-900 mb-3 text-base sm:text-lg">
-                Comments ({comments.length})
-              </h3>
+              <h3 className="font-semibold text-gray-900 mb-3 text-base sm:text-lg">Comments ({comments.length})</h3>
               {comments.length === 0 ? (
                 <p className="text-gray-500 text-xs sm:text-sm text-center py-6 sm:py-8">No comments yet. Be the first to comment!</p>
               ) : (
                 <div className="space-y-1">
                   {comments.map((comment) => (
-                    <Comment key={comment.id} comment={comment} currentUserId={currentUserId} isAdmin={isAdmin} onDelete={handleDeleteComment} />
+                    <Comment
+                      key={comment.id}
+                      comment={comment}
+                      currentUserId={currentUserId}
+                      isAdmin={isAdmin}
+                      onDelete={handleDeleteComment}
+                    />
                   ))}
                 </div>
               )}
@@ -186,10 +204,18 @@ export default function PostDetailModal({ postId, currentUserId, currentUserEmai
             {/* Comment Form */}
             {currentUserId && currentUserEmail && currentUsername ? (
               <div className="p-3 sm:p-4 border-t border-gray-200">
-                <CommentForm postId={postId} userId={currentUserId} userEmail={currentUserEmail} username={currentUsername} onCommentAdded={handleCommentAdded} />
+                <CommentForm
+                  postId={postId}
+                  userId={currentUserId}
+                  userEmail={currentUserEmail}
+                  username={currentUsername}
+                  onCommentAdded={handleCommentAdded}
+                />
               </div>
             ) : (
-              <div className="p-3 sm:p-4 border-t border-gray-200 text-center text-gray-600 text-xs sm:text-sm">Sign in to leave a comment</div>
+              <div className="p-3 sm:p-4 border-t border-gray-200 text-center text-gray-600 text-xs sm:text-sm">
+                Sign in to leave a comment
+              </div>
             )}
           </>
         ) : (
