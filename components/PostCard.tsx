@@ -109,20 +109,22 @@ export default function PostCard({ post, isAdmin, currentUserId, onDelete, onTog
           </div>
         )}
 
-        {/* Admin Controls */}
-        {isAdmin && (
+        {/* Post Controls */}
+        {(isAdmin || currentUserId === post.user_id) && (
           <div className="absolute top-2 right-2 flex gap-2">
-            <button
-              onClick={handleTogglePin}
-              className={`p-2 rounded-md transition-colors shadow-md border-2 ${
-                post.is_pinned
-                  ? "bg-warning text-white border-primary hover:bg-primary"
-                  : "bg-white text-primary border-primary hover:bg-primary hover:text-white"
-              }`}
-              title={post.is_pinned ? "Unpin post" : "Pin post"}
-            >
-              <Pin size={16} className={post.is_pinned ? "fill-current" : ""} />
-            </button>
+            {isAdmin && (
+              <button
+                onClick={handleTogglePin}
+                className={`p-2 rounded-md transition-colors shadow-md border-2 ${
+                  post.is_pinned
+                    ? "bg-warning text-white border-primary hover:bg-primary"
+                    : "bg-white text-primary border-primary hover:bg-primary hover:text-white"
+                }`}
+                title={post.is_pinned ? "Unpin post" : "Pin post"}
+              >
+                <Pin size={16} className={post.is_pinned ? "fill-current" : ""} />
+              </button>
+            )}
             <button
               onClick={handleDeleteClick}
               disabled={isDeleting}

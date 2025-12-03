@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase, Post, Comment as CommentType } from "@/lib/supabase";
-import { ArrowLeft, LogOut, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, LogOut, ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Comment from "@/components/Comment";
 import CommentForm from "@/components/CommentForm";
@@ -96,6 +96,20 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
       subscription.unsubscribe();
     };
   }, [params.id]);
+
+  const handleDeletePost = async () => {
+    if (!confirm("Are you sure you want to delete this post?")) return;
+
+    try {
+      const { error } = await supabase.from("posts").delete().eq("id", params.id);
+
+      if (error) throw error;
+      router.push("/");
+    } catch (error) {
+      console.error("Error deleting post:", error);
+      alert("Failed to delete post");
+    }
+  };
 
   const handleDeleteComment = async (commentId: string) => {
     try {
@@ -229,10 +243,21 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
               )}
               <div className="p-4 sm:p-6">
                 <div className="mb-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-2">
-                    <p className="font-heading text-primary text-base sm:text-lg break-all">{post.username || post.user_email}</p>
-                    {post.is_pinned && (
-                      <span className="px-2 py-1 bg-warning text-white text-xs rounded-full font-bold border-2 border-primary self-start">PINNED</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                      <p className="font-heading text-primary text-base sm:text-lg break-all">{post.username || post.user_email}</p>
+                      {post.is_pinned && (
+                        <span className="px-2 py-1 bg-warning text-white text-xs rounded-full font-bold border-2 border-primary self-start">PINNED</span>
+                      )}
+                    </div>
+                    {(isAdmin || user?.id === post.user_id) && (
+                      <button
+                        onClick={handleDeletePost}
+                        className="p-2 bg-danger text-white border-2 border-primary rounded-md hover:bg-primary transition-colors self-start"
+                        title="Delete post"
+                      >
+                        <Trash2 size={16} />
+                      </button>
                     )}
                   </div>
                   <p className="text-xs sm:text-sm text-primary/70">{formatDate(post.created_at)}</p>
