@@ -24,6 +24,8 @@ export type Comment = {
   user_email: string
   username: string
   content: string
+  is_hidden: boolean
+  parent_comment_id: string | null
   created_at: string
 }
 
@@ -45,4 +47,40 @@ export type Notification = {
   content: string
   is_read: boolean
   created_at: string
+}
+
+// Helper type for threaded comments with replies
+export type CommentWithReplies = Comment & {
+  replies: CommentWithReplies[]
+}
+
+// Organize flat comments into a threaded structure
+// All comments (including hidden ones) are included in the structure
+// The Comment component handles masking hidden content for unauthorized users
+export function organizeComments(comments: Comment[]): CommentWithReplies[] {
+  const commentMap = new Map<string, CommentWithReplies>()
+  const rootComments: CommentWithReplies[] = []
+
+  // Initialize all comments with empty replies array
+  comments.forEach(comment => {
+    commentMap.set(comment.id, { ...comment, replies: [] })
+  })
+
+  // Build the tree structure
+  comments.forEach(comment => {
+    const commentWithReplies = commentMap.get(comment.id)!
+
+    if (comment.parent_comment_id === null) {
+      // Top-level comment
+      rootComments.push(commentWithReplies)
+    } else {
+      // Reply to another comment
+      const parent = commentMap.get(comment.parent_comment_id)
+      if (parent) {
+        parent.replies.push(commentWithReplies)
+      }
+    }
+  })
+
+  return rootComments
 }

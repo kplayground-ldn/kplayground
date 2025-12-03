@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase, Post, Comment as CommentType } from "@/lib/supabase";
+import { supabase, Post, Comment as CommentType, CommentWithReplies, organizeComments } from "@/lib/supabase";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import Comment from "./Comment";
 import CommentForm from "./CommentForm";
@@ -25,6 +25,7 @@ export default function PostDetailModal({
 }: PostDetailModalProps) {
   const [post, setPost] = useState<Post | null>(null);
   const [comments, setComments] = useState<CommentType[]>([]);
+  const [threadedComments, setThreadedComments] = useState<CommentWithReplies[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
@@ -55,7 +56,9 @@ export default function PostDetailModal({
       if (commentsError) {
         console.error("Error fetching comments:", commentsError);
       } else {
-        setComments(commentsData || []);
+        const allComments = commentsData || [];
+        setComments(allComments);
+        setThreadedComments(organizeComments(allComments));
       }
 
       setLoading(false);
@@ -90,7 +93,11 @@ export default function PostDetailModal({
 
   const handleCommentAdded = (newComment: CommentType) => {
     // Immediately add the comment to the UI for instant feedback
-    setComments((prev) => [...prev, newComment]);
+    setComments((prev) => {
+      const updated = [...prev, newComment];
+      setThreadedComments(organizeComments(updated));
+      return updated;
+    });
     // Subscription will keep things in sync if needed
   };
 
@@ -184,17 +191,24 @@ export default function PostDetailModal({
             {/* Comments Section */}
             <div className="flex-1 overflow-y-auto p-3 sm:p-4">
               <h3 className="font-semibold text-gray-900 mb-3 text-base sm:text-lg">Comments ({comments.length})</h3>
-              {comments.length === 0 ? (
+              {threadedComments.length === 0 ? (
                 <p className="text-gray-500 text-xs sm:text-sm text-center py-6 sm:py-8">No comments yet. Be the first to comment!</p>
               ) : (
                 <div className="space-y-1">
-                  {comments.map((comment) => (
+                  {threadedComments.map((comment) => (
                     <Comment
                       key={comment.id}
                       comment={comment}
                       currentUserId={currentUserId}
+                      currentUserEmail={currentUserEmail}
+                      currentUsername={currentUsername}
                       isAdmin={isAdmin}
                       onDelete={handleDeleteComment}
+                      onReplyAdded={handleCommentAdded}
+                      depth={0}
+                      replies={comment.replies}
+                      postAuthorId={post?.user_id || ""}
+                      allComments={comments}
                     />
                   ))}
                 </div>

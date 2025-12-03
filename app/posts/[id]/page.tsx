@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase, Post, Comment as CommentType } from "@/lib/supabase";
+import { supabase, Post, Comment as CommentType, CommentWithReplies, organizeComments } from "@/lib/supabase";
 import { ArrowLeft, LogOut, ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Comment from "@/components/Comment";
@@ -13,6 +13,7 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
   const router = useRouter();
   const [post, setPost] = useState<Post | null>(null);
   const [comments, setComments] = useState<CommentType[]>([]);
+  const [threadedComments, setThreadedComments] = useState<CommentWithReplies[]>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [username, setUsername] = useState("");
@@ -76,7 +77,9 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
       if (commentsError) {
         console.error("Error fetching comments:", commentsError);
       } else {
-        setComments(commentsData || []);
+        const allComments = commentsData || [];
+        setComments(allComments);
+        setThreadedComments(organizeComments(allComments));
       }
 
       setLoading(false);
@@ -125,7 +128,11 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
 
   const handleCommentAdded = (newComment: CommentType) => {
     // Immediately add the comment to the UI for instant feedback
-    setComments((prev) => [...prev, newComment]);
+    setComments((prev) => {
+      const updated = [...prev, newComment];
+      setThreadedComments(organizeComments(updated));
+      return updated;
+    });
     // Subscription will keep things in sync if needed
   };
 
@@ -270,12 +277,25 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
             <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 border-2 border-primary">
               <h3 className="font-heading text-primary text-lg sm:text-xl mb-4">Comments ({comments.length})</h3>
 
-              {comments.length === 0 ? (
+              {threadedComments.length === 0 ? (
                 <p className="text-primary/70 text-center py-8">No comments yet. Be the first to comment!</p>
               ) : (
                 <div className="space-y-1 mb-6">
-                  {comments.map((comment) => (
-                    <Comment key={comment.id} comment={comment} currentUserId={user?.id} isAdmin={isAdmin} onDelete={handleDeleteComment} />
+                  {threadedComments.map((comment) => (
+                    <Comment
+                      key={comment.id}
+                      comment={comment}
+                      currentUserId={user?.id}
+                      currentUserEmail={user?.email}
+                      currentUsername={username}
+                      isAdmin={isAdmin}
+                      onDelete={handleDeleteComment}
+                      onReplyAdded={handleCommentAdded}
+                      depth={0}
+                      replies={comment.replies}
+                      postAuthorId={post?.user_id || ""}
+                      allComments={comments}
+                    />
                   ))}
                 </div>
               )}
