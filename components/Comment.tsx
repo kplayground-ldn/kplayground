@@ -39,7 +39,7 @@ export default function Comment({
   const hasHiddenParent = () => {
     if (!comment.parent_comment_id) return false;
 
-    let currentParentId = comment.parent_comment_id;
+    let currentParentId: string | null = comment.parent_comment_id;
     while (currentParentId) {
       const parent = allComments.find(c => c.id === currentParentId);
       if (parent?.is_hidden) return true;
@@ -61,7 +61,7 @@ export default function Comment({
     if (currentUserId === postAuthorId) return true;
 
     // Check if user is an author in the parent chain (can see the thread)
-    let currentParentId = comment.parent_comment_id;
+    let currentParentId: string | null = comment.parent_comment_id;
     while (currentParentId) {
       const parent = allComments.find(c => c.id === currentParentId);
       if (parent && currentUserId === parent.user_id) {
