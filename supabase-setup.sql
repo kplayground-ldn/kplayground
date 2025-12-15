@@ -85,6 +85,17 @@ CREATE POLICY "Users can delete their own posts"
   ON posts FOR DELETE
   USING (auth.uid() = user_id);
 
+-- Allow admins to delete any post
+CREATE POLICY "Admins can delete any post"
+  ON posts FOR DELETE
+  USING (
+    EXISTS (
+      SELECT 1 FROM profiles
+      WHERE profiles.id = auth.uid()
+      AND profiles.is_admin = true
+    )
+  );
+
 -- Allow users to update their own posts (for pinning - will be admin only in app logic)
 CREATE POLICY "Users can update posts"
   ON posts FOR UPDATE
